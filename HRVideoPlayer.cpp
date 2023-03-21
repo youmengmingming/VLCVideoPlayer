@@ -11,7 +11,7 @@ HRVideoPlayer::HRVideoPlayer(QWidget *parent)
 	,totalTimer(0)
 {
     ui->setupUi(this);
-	this->setWindowFlag(Qt::FramelessWindowHint);
+	//this->setWindowFlag(Qt::FramelessWindowHint);
 	connect(ui->doubleSpinBox_speed, SIGNAL(valueChanged(double)), this, SLOT(setSpeed(double)));
 	connect(ui->hSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotSliderMoved(int)));
 }
