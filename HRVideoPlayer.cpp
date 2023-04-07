@@ -11,6 +11,10 @@ HRVideoPlayer::HRVideoPlayer(QWidget *parent)
 	,totalTimer(0)
 {
     ui->setupUi(this);
+	ui->pushButton_play->setEnabled(false);
+	ui->pushButton_stop->setEnabled(false);
+	ui->doubleSpinBox_speed->setEnabled(false);
+	ui->hSlider->setEnabled(false);
 	//this->setWindowFlag(Qt::FramelessWindowHint);
 	connect(ui->doubleSpinBox_speed, SIGNAL(valueChanged(double)), this, SLOT(setSpeed(double)));
 	connect(ui->hSlider, SIGNAL(sliderMoved(int)), this, SLOT(slotSliderMoved(int)));
@@ -101,12 +105,17 @@ void HRVideoPlayer::on_pushButton_open_clicked()
 			on_pushButton_stop_clicked();
 		}
 	}
+	ui->label_video->setText(QString::fromUtf16(u"加载中..."));
 	_vlcPlayer = new VlcPlayer(this);
 	totalTimer = new QTimer();
 	connect(totalTimer, SIGNAL(timeout()), this, SLOT(slotTimeOut()));
 	QString path = QFileDialog::getOpenFileName(this, "Choose your file");
 	path = QDir::toNativeSeparators(path);//处理路径，路径斜杠方式不正确，会导致媒体创建时无法获取路径，从而返回空指针
-	if (path.isEmpty()) return;
+	if (path.isEmpty())
+	{
+		ui->label_video->setText("");
+		return;
+	}
 	path  = QString::fromUtf16(path.toStdU16String().c_str());//QString的中文字符处理  QString::fromUtf16(u"中文字符");
 	_vlcPlayer->setMediaName(path);
 	_vlcPlayer->setWId(ui->label_video->winId());
@@ -114,6 +123,11 @@ void HRVideoPlayer::on_pushButton_open_clicked()
 	_totalTime = _vlcPlayer->getMediaLength();
 	ui->hSlider->setMaximum(_totalTime);
 	ui->label_end->setText(formatTime(_totalTime));
+	ui->label_video->setText("");
+	ui->pushButton_play->setEnabled(true);
+	ui->pushButton_stop->setEnabled(true);
+	ui->doubleSpinBox_speed->setEnabled(true);
+	ui->hSlider->setEnabled(true);
 }
 
 void HRVideoPlayer::on_pushButton_play_clicked()
@@ -147,6 +161,10 @@ void HRVideoPlayer::on_pushButton_stop_clicked()
 	ui->label_start->setText(str);
 	ui->label_end->setText(str);
 	ui->hSlider->setValue(0);
+	ui->pushButton_play->setEnabled(false);
+	ui->pushButton_stop->setEnabled(false);
+	ui->doubleSpinBox_speed->setEnabled(false);
+	ui->hSlider->setEnabled(false);
 }
 
 void HRVideoPlayer::on_pushButton_fullScreen_clicked()
